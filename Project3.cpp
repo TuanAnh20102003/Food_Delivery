@@ -34,7 +34,7 @@ bool pid_line_sensor(Magnetic mag, Controller vehicle, double prevError, double 
 	}
 	prevError = error;
 	vehicle.set_rpm(right_rpm, left_rpm);
-	Sleep(1500);
+	Sleep(100);
 	return 1;
 	
 }
@@ -55,12 +55,13 @@ int main()
 	vehicle.enable_motor();
 	uint16_t cmds[2] = { 30, -30 };
 	vehicle.set_rpm(cmds[0], cmds[1]); //left, right
-	Sleep(1500);
+	Sleep(1000);
 	float prevError = mag.get_position_value() - target;
 	//vehicle.stop();
 	//int a = vehicle.get_mode();
 	//std::cout << a << std::endl;
-
+	vehicle.set_accel_time(50, 50);
+	vehicle.set_decel_time(50, 50);
 	while (1)
 	{
 		bool flag = pid_line_sensor(mag, vehicle, prevError, target, cmds);
@@ -69,6 +70,10 @@ int main()
 			continue;
 		}
 		else break;
+		Sleep(100);
+
+		position = mag.get_position_value();
+		std::cout << "Position: " << position << std::endl;
 	}
 	
 	/*laser.get_lase_sensor_id();
